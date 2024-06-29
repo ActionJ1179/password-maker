@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Generator</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(to bottom right, #45aaf2, #9d50bb);
+      }
+      .container {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 60px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .password-section {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .password-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      .options-label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 14px;
+        text-align: left;
+        width: 100%;
+        max-width: 250px;
+      }
+      .options-checkbox {
+        margin-right: 5px;
+        margin-left: 0;
+      }
+      .generated-password {
+        font-size: 1.5em;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        word-break: break-all;
+        text-align: center; /
+      }
+      .generate-button,
+      .copy-button {
+        padding: 12px 24px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        margin-top: 10px;
+        display: inline-block
+      }
+      .generate-button:hover,
+      .copy-button:hover {
+        background-color: #0056b3;
+      }
+      .copy-button {
+        background-color: #28a745;
+        margin-left: 10px;
+      }
+      .copy-button:hover {
+        background-color: #218838;
+      }
+
+
+      .contact-button {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 12px 24px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #0720ff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        z-index: 999;
+      }
+      .contact-button:hover {
+        background-color: #004bec;
+      }
+
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+      .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        text-align: center;
+      }
+      .popup p {
+        margin-bottom: 20px;
+      }
+      .popup button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+      .popup button:hover {
+        background-color: #0056b3;
+      }
+      .popup .copy-email-button {
+        background-color: #28a745;
+        margin-left: 10px;
+      }
+      .popup .copy-email-button:hover {
+        background-color: #218838;
+      }
+      .disclaimer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Password Generator</h1>
+      <div class="password-section">
+        <label
+          for="passwordLength"
+          class="options-label"
+          style="text-align: left"
+          >Password Length:</label
+        >
+        <input
+          type="number"
+          id="passwordLength"
+          class="password-input"
+          value="16"
+          min="4"
+          max="64"
+        />
+        <br />
+        <label for="passwordType" class="options-label" style="text-align: left"
+          >Password Type:</label
+        >
+        <select
+          id="passwordType"
+          onchange="generatePassword()"
+          class="password-input"
+        >
+          <option value="regular">Regular</option>
+          <option value="pin">PIN</option>
+        </select>
+        <br /><br />
+        <label class="options-label"
+          ><input
+            type="checkbox"
+            id="includeNumbers"
+            class="options-checkbox"
+            checked
+          />
+          Include Numbers (0-9)</label
+        >
+        <label class="options-label"
+          ><input
+            type="checkbox"
+            id="includeUppercase"
+            class="options-checkbox"
+            checked
+          />
+          Include Uppercase Letters (A-Z)</label
+        >
+        <label class="options-label"
+          ><input
+            type="checkbox"
+            id="includeLowercase"
+            class="options-checkbox"
+            checked
+          />
+          Include Lowercase Letters (a-z)</label
+        >
+        <label class="options-label"
+          ><input
+            type="checkbox"
+            id="includeSpecialChars"
+            class="options-checkbox"
+            checked
+          />
+          Include Special Characters (!@#$%^&*()_+)</label
+        >
+        <br /><br />
+        <p class="generated-password" id="generatedPassword"></p>
+        <div>
+          <button class="generate-button" onclick="generatePassword()">
+            Generate Password
+          </button>
+          <button class="copy-button" onclick="copyPassword()">
+            Copy Password
+          </button>
+        </div>
+      </div>
+      <p class="disclaimer">
+        Disclaimer: Please note that for your security and privacy, we do not
+        store, remember, or have access to any of the passwords generated using
+        this tool. Each password is generated locally on your device and remains
+        completely private
+      </p>
+    </div>
+
+    <!-- Contact Us button -->
+    <button class="contact-button" onclick="openContactPopup()">
+      Contact Us
+    </button>
+
+    <!-- Contact Us popup -->
+    <div
+      class="overlay"
+      id="contactOverlay"
+      onclick="closeContactPopup()"
+    ></div>
+    <div class="popup" id="contactPopup">
+      <p id="contactEmail">Email: example@gmail.com</p>
+      <div>
+        <button onclick="closeContactPopup()">Close</button>
+        <button class="copy-email-button" onclick="copyEmail()">
+          Copy Email
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function generatePassword() {
+        var passwordType = document.getElementById("passwordType").value;
+        var length = document.getElementById("passwordLength").value;
+        if (passwordType === "regular") {
+          length = 16;
+          document.getElementById("passwordLength").value = length;
+        } else if (passwordType === "pin") {
+          length = 4;
+          document.getElementById("passwordLength").value = length;
+        }
+
+        var charset = "";
+        if (passwordType === "regular") {
+          if (document.getElementById("includeNumbers").checked) {
+            charset += "0123456789";
+          }
+          if (document.getElementById("includeUppercase").checked) {
+            charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+          }
+          if (document.getElementById("includeLowercase").checked) {
+            charset += "abcdefghijklmnopqrstuvwxyz";
+          }
+          if (document.getElementById("includeSpecialChars").checked) {
+            charset += "!@#$%^&*()_+";
+          }
+        } else if (passwordType === "pin") {
+          charset = "0123456789";
+        }
+
+        var password = "";
+        for (var i = 0; i < length; i++) {
+          var randomIndex = Math.floor(Math.random() * charset.length);
+          password += charset[randomIndex];
+        }
+        document.getElementById("generatedPassword").textContent = password;
+      }
+
+      function copyPassword() {
+        var passwordText =
+          document.getElementById("generatedPassword").textContent;
+        var textarea = document.createElement("textarea");
+        textarea.value = passwordText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("Password copied to clipboard");
+      }
+
+      function openContactPopup() {
+        document.getElementById("contactOverlay").style.display = "block";
+        document.getElementById("contactPopup").style.display = "block";
+      }
+
+      function closeContactPopup() {
+        document.getElementById("contactOverlay").style.display = "none";
+        document.getElementById("contactPopup").style.display = "none";
+      }
+
+      function copyEmail() {
+        var emailText = document
+          .getElementById("contactEmail")
+          .textContent.replace("Email: ", "");
+        var textarea = document.createElement("textarea");
+        textarea.value = emailText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("Email copied to clipboard");
+      }
+    </script>
+  </body>
+</html>
